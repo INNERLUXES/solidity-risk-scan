@@ -1,0 +1,51 @@
+{
+  "name": "solidity-risk-scan",
+  "version": "1.0.0",
+  "description": "Solidity risk scan: a first pass over Solidity code before an audit. Reads .sol files (or folders of them) and lists, with file, line and column, functions that change state with no access check, low-level calls whose result is ignored, external calls made before state is updated, tx.origin checks, delegatecall and selfdestruct, randomness taken from block values, and loops over the length of a state array. Every check is a pattern-based heuristic with false positives and false negatives; it points reviewers at places to look and it is not an audit. Does not compile or run the code, contacts nothing over the network, writes nothing. Text, markdown, JSON and SARIF output, exit codes for a pipeline, no dependencies.",
+  "type": "module",
+  "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "bin": {
+    "solidity-risk-scan": "bin/solidity-risk-scan.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "docs",
+    "examples",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test \"test/*.test.js\"",
+    "test:coverage": "node --test --experimental-test-coverage \"test/*.test.js\"",
+    "check": "node tools/check.mjs",
+    "example": "node tools/example.mjs"
+  },
+  "keywords": [
+    "solidity",
+    "smart-contracts",
+    "smart-contract-security",
+    "smart-contract-audit",
+    "ethereum",
+    "evm",
+    "static-analysis",
+    "security",
+    "blockchain",
+    "sarif",
+    "cli",
+    "nodejs"
+  ],
+  "author": "INNERLUXES <info@innerluxes.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/INNERLUXES/solidity-risk-scan.git"
+  },
+  "homepage": "https://innerluxes.dev/blockchain/security/audit/smart-contract"
+}

@@ -1,0 +1,11 @@
+* text=auto eol=lf
+# The example files are kept byte for byte as written, so a test can read them with LF and with CRLF and as
+# UTF-16.
+examples/bad/** -text
+examples/good/** -text
+# The example output is kept as the tool writes it.
+examples/output/** -text
+# The files of the examples are made-up input, not code of this project.
+examples/** linguist-documentation
+examples/** linguist-detectable=false
+examples/** linguist-vendored
