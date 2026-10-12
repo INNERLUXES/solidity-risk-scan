@@ -1,0 +1,19 @@
+# Every change is reviewed by a maintainer.
+* @innerluxesdev
+
+# The reading of files, the lexer, the parser, the walk of folders, the search for keys, the checks, the rules and the output
+# decide every result and what is read from the disk; changes need extra care.
+/src/files.js @innerluxesdev
+/src/walk.js @innerluxesdev
+/src/lexer.js @innerluxesdev
+/src/structure.js @innerluxesdev
+/src/secrets.js @innerluxesdev
+/src/analyze.js @innerluxesdev
+/src/data.js @innerluxesdev
+/src/rules.js @innerluxesdev
+/src/check.js @innerluxesdev
+/src/report.js @innerluxesdev
+/src/cli.js @innerluxesdev
+/src/size.js @innerluxesdev
+/src/text.js @innerluxesdev
+/src/index.js @innerluxesdev
