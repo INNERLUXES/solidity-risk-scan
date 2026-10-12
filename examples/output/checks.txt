@@ -1,0 +1,16 @@
+solidity-risk-scan checks
+
+  file-unreadable               error    high    -                                 a file the tool could not read or follow (not UTF-8, too large, a comment or string never closed, a character Solidity does not use, brackets that do not match, too many tokens), so nothing in it was checked
+  state-change-no-access-check  warning  medium  Access Control Vulnerabilities    a public or external function that is not view or pure and writes a state variable, or calls selfdestruct or delegatecall, with no access modifier from the list and no comparison of msg.sender in its body
+  unchecked-low-level-call      error    high    Unchecked External Calls          a low-level call, delegatecall, staticcall or send whose bool result is not used; also a note on transfer and send, which pass a fixed gas stipend
+  call-before-state-write       warning  medium  Reentrancy Attacks                in one function, an external call (a low-level call, transfer, send, a call through an address or contract variable, safeTransfer) comes before a write to a state variable, and the function has no nonReentrant modifier
+  tx-origin-auth                error    high    Access Control Vulnerabilities    tx.origin used in a comparison, a require, an assert, an if or a while
+  delegatecall-use              warning  medium  Unchecked External Calls          delegatecall, which runs code of another contract with the storage of this one; an error when the target is a parameter of the function, info when the function has an access check
+  selfdestruct-use              warning  medium  Access Control Vulnerabilities    selfdestruct (or suicide), which removes the code of the contract and sends its balance away; info when the function has an access check
+  block-randomness              warning  medium  Insecure Randomness               block.timestamp, block.number, block.prevrandao, block.difficulty or blockhash used inside keccak256, sha256 or abi.encode, or in a statement with %
+  unbounded-loop                warning  medium  Denial of Service (DoS) Attacks   a for or while loop whose condition compares with the length of a state array
+  floating-pragma               info     high    -                                 pragma solidity with ^, >, <, ~ or a range, so the file builds with more than one compiler version
+  missing-spdx                  info     high    -                                 no SPDX-License-Identifier comment in the file
+  secret-in-source              error    medium  -                                 a string or a comment shaped like a mnemonic, an extended private key, a private key in hex or a key in WIF
+
+Every check is a heuristic of this tool; it is not a rule of OWASP and it is not proof that the code is safe or unsafe. The OWASP item is the item of the OWASP Smart Contract Top 10 that the check relates to, by name only. The level and the confidence given here are the usual ones; a finding may carry another, and says so. The tool is a pattern-based first pass over the text of Solidity files; it points a reviewer at places to look and it is not an audit.

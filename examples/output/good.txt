@@ -1,0 +1,38 @@
+solidity-risk-scan: examples/good
+files: 5 read, 0 not read, 165 lines
+contracts: 4 contracts, 1 interface, 1 library; 18 functions
+access modifiers: onlyOwner, onlyRole, onlyAdmin, auth, requiresAuth
+findings: 0
+
+Checks (12)
+
+  check                         level    confidence  findings
+  file-unreadable               error    high        0
+  state-change-no-access-check  warning  medium      0
+  unchecked-low-level-call      error    high        0
+  call-before-state-write       warning  medium      0
+  tx-origin-auth                error    high        0
+  delegatecall-use              warning  medium      0
+  selfdestruct-use              warning  medium      0
+  block-randomness              warning  medium      0
+  unbounded-loop                warning  medium      0
+  floating-pragma               info     high        0
+  missing-spdx                  info     high        0
+  secret-in-source              error    medium      0
+
+Findings (0)
+
+  none
+
+Files (5)
+
+  file                           lines  contracts  functions  findings
+  examples/good/IVault.sol       10     1          3          0
+  examples/good/Ownable.sol      22     1          3          0
+  examples/good/Payouts.sol      38     2          3          0
+  examples/good/SimpleToken.sol  46     1          4          0
+  examples/good/Vault.sol        49     1          5          0
+
+This report is a heuristic first pass over the text of the files. It points a reviewer at places to look; it is not an audit, it does not compile or run the code, and a clean report does not mean the code is safe.
+
+RESULT: PASS - no finding at or above error

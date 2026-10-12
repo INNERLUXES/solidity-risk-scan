@@ -1,0 +1,1172 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "solidity-risk-scan",
+          "version": "1.0.0",
+          "informationUri": "https://github.com/INNERLUXES/solidity-risk-scan",
+          "rules": [
+            {
+              "id": "file-unreadable",
+              "name": "file-unreadable",
+              "shortDescription": {
+                "text": "a file the tool could not read or follow (not UTF-8, too large, a comment or string never closed, a character Solidity does not use, brackets that do not match, too many tokens), so nothing in it was checked"
+              },
+              "help": {
+                "text": "Fix the file or leave it out of the scan; a file that is not read is not a file that is fine. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": null
+              }
+            },
+            {
+              "id": "state-change-no-access-check",
+              "name": "state-change-no-access-check",
+              "shortDescription": {
+                "text": "a public or external function that is not view or pure and writes a state variable, or calls selfdestruct or delegatecall, with no access modifier from the list and no comparison of msg.sender in its body"
+              },
+              "help": {
+                "text": "Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Access Control Vulnerabilities"
+              }
+            },
+            {
+              "id": "unchecked-low-level-call",
+              "name": "unchecked-low-level-call",
+              "shortDescription": {
+                "text": "a low-level call, delegatecall, staticcall or send whose bool result is not used; also a note on transfer and send, which pass a fixed gas stipend"
+              },
+              "help": {
+                "text": "Use the bool the call returns (require it, or branch on it), or use a library call that reverts for you. Do not rely on transfer or send to be enough gas for a recipient that is a contract. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": "Unchecked External Calls"
+              }
+            },
+            {
+              "id": "call-before-state-write",
+              "name": "call-before-state-write",
+              "shortDescription": {
+                "text": "in one function, an external call (a low-level call, transfer, send, a call through an address or contract variable, safeTransfer) comes before a write to a state variable, and the function has no nonReentrant modifier"
+              },
+              "help": {
+                "text": "Write the state first and make the external call last (checks, effects, interactions), or guard the function with a reentrancy lock. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Reentrancy Attacks"
+              }
+            },
+            {
+              "id": "tx-origin-auth",
+              "name": "tx-origin-auth",
+              "shortDescription": {
+                "text": "tx.origin used in a comparison, a require, an assert, an if or a while"
+              },
+              "help": {
+                "text": "Use msg.sender to know who called. tx.origin is the account that started the transaction, not the contract that called this one, so a contract the owner calls can act as the owner. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": "Access Control Vulnerabilities"
+              }
+            },
+            {
+              "id": "delegatecall-use",
+              "name": "delegatecall-use",
+              "shortDescription": {
+                "text": "delegatecall, which runs code of another contract with the storage of this one; an error when the target is a parameter of the function, info when the function has an access check"
+              },
+              "help": {
+                "text": "Make sure the target cannot be chosen by a caller, that its storage layout fits this contract, and that only a trusted role can reach the call. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Unchecked External Calls"
+              }
+            },
+            {
+              "id": "selfdestruct-use",
+              "name": "selfdestruct-use",
+              "shortDescription": {
+                "text": "selfdestruct (or suicide), which removes the code of the contract and sends its balance away; info when the function has an access check"
+              },
+              "help": {
+                "text": "Make sure only a trusted role can reach it, and check whether the behaviour you rely on is the same on the chains and compiler versions you target. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Access Control Vulnerabilities"
+              }
+            },
+            {
+              "id": "block-randomness",
+              "name": "block-randomness",
+              "shortDescription": {
+                "text": "block.timestamp, block.number, block.prevrandao, block.difficulty or blockhash used inside keccak256, sha256 or abi.encode, or in a statement with %"
+              },
+              "help": {
+                "text": "Do not draw anything of value from block values: a validator or a caller who can wait for the right block can pick the result. Use a source of randomness built for it. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Insecure Randomness"
+              }
+            },
+            {
+              "id": "unbounded-loop",
+              "name": "unbounded-loop",
+              "shortDescription": {
+                "text": "a for or while loop whose condition compares with the length of a state array"
+              },
+              "help": {
+                "text": "Bound the work of one call: process a range, keep a cursor in storage, or let each user pull what is theirs instead of pushing to everyone. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Denial of Service (DoS) Attacks"
+              }
+            },
+            {
+              "id": "floating-pragma",
+              "name": "floating-pragma",
+              "shortDescription": {
+                "text": "pragma solidity with ^, >, <, ~ or a range, so the file builds with more than one compiler version"
+              },
+              "help": {
+                "text": "Pin the version you test and deploy with, such as pragma solidity 0.8.24, for contracts that are deployed. A library may keep a range on purpose. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": null
+              }
+            },
+            {
+              "id": "missing-spdx",
+              "name": "missing-spdx",
+              "shortDescription": {
+                "text": "no SPDX-License-Identifier comment in the file"
+              },
+              "help": {
+                "text": "Add a line such as // SPDX-License-Identifier: MIT at the top of the file, with the license you use. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": null
+              }
+            },
+            {
+              "id": "secret-in-source",
+              "name": "secret-in-source",
+              "shortDescription": {
+                "text": "a string or a comment shaped like a mnemonic, an extended private key, a private key in hex or a key in WIF"
+              },
+              "help": {
+                "text": "Remove it from the file and from the history of the repository, and treat the key as exposed. The tool does not show the value. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": null
+              }
+            }
+          ]
+        }
+      },
+      "artifacts": [
+        {
+          "location": {
+            "uri": "examples/bad/LeakyVault.sol"
+          }
+        },
+        {
+          "location": {
+            "uri": "examples/bad/LuckyDraw.sol"
+          }
+        },
+        {
+          "location": {
+            "uri": "examples/bad/OldRegistry.sol"
+          }
+        },
+        {
+          "location": {
+            "uri": "examples/bad/OriginWallet.sol"
+          }
+        },
+        {
+          "location": {
+            "uri": "examples/bad/UpgradeShim.sol"
+          }
+        }
+      ],
+      "results": [
+        {
+          "ruleId": "unchecked-low-level-call",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "The function tip makes a .call() call and does not use the bool it returns, so a failed call goes unnoticed. Fix: Use the bool the call returns (require it, or branch on it), or use a library call that reverts for you. Do not rely on transfer or send to be enough gas for a recipient that is a contract."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 27,
+                  "startColumn": 12
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Unchecked External Calls",
+            "subject": "tip"
+          }
+        },
+        {
+          "ruleId": "unchecked-low-level-call",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "The function refund makes a .send() call and does not use the bool it returns, so a failed call goes unnoticed. Fix: Use the bool the call returns (require it, or branch on it), or use a library call that reverts for you. Do not rely on transfer or send to be enough gas for a recipient that is a contract."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 31,
+                  "startColumn": 12
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Unchecked External Calls",
+            "subject": "refund"
+          }
+        },
+        {
+          "ruleId": "unchecked-low-level-call",
+          "ruleIndex": 2,
+          "level": "error",
+          "message": {
+            "text": "The function capture stores the bool of a .call() call in ok and never reads it, so a failed call goes unnoticed. Fix: Use the bool the call returns (require it, or branch on it), or use a library call that reverts for you. Do not rely on transfer or send to be enough gas for a recipient that is a contract."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 48,
+                  "startColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Unchecked External Calls",
+            "subject": "capture"
+          }
+        },
+        {
+          "ruleId": "secret-in-source",
+          "ruleIndex": 11,
+          "level": "error",
+          "message": {
+            "text": "A string is shaped like a mnemonic. The tool never reads a key and the value is not shown. Fix: Remove it from the file and from the history of the repository, and treat the key as exposed. The tool does not show the value."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/OldRegistry.sol",
+                  "index": 2
+                },
+                "region": {
+                  "startLine": 6,
+                  "startColumn": 27
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": null,
+            "subject": null
+          }
+        },
+        {
+          "ruleId": "tx-origin-auth",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "The function pay uses tx.origin in a condition. A contract the owner is tricked into calling can pass this check as the owner; use msg.sender. Fix: Use msg.sender to know who called. tx.origin is the account that started the transaction, not the contract that called this one, so a contract the owner calls can act as the owner."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/OriginWallet.sol",
+                  "index": 3
+                },
+                "region": {
+                  "startLine": 13,
+                  "startColumn": 17
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "pay"
+          }
+        },
+        {
+          "ruleId": "tx-origin-auth",
+          "ruleIndex": 4,
+          "level": "error",
+          "message": {
+            "text": "The function isOwner uses tx.origin in a condition. A contract the owner is tricked into calling can pass this check as the owner; use msg.sender. Fix: Use msg.sender to know who called. tx.origin is the account that started the transaction, not the contract that called this one, so a contract the owner calls can act as the owner."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/OriginWallet.sol",
+                  "index": 3
+                },
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 16
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "isOwner"
+          }
+        },
+        {
+          "ruleId": "delegatecall-use",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "The function forward uses delegatecall on an address that is a parameter of the function. Whoever calls it chooses the code that runs with the storage and the balance of this contract. Fix: Make sure the target cannot be chosen by a caller, that its storage layout fits this contract, and that only a trusted role can reach the call."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/UpgradeShim.sol",
+                  "index": 4
+                },
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 30
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Unchecked External Calls",
+            "subject": "forward"
+          }
+        },
+        {
+          "ruleId": "delegatecall-use",
+          "ruleIndex": 5,
+          "level": "error",
+          "message": {
+            "text": "The function poke uses delegatecall on an address that is a parameter of the function. Whoever calls it chooses the code that runs with the storage and the balance of this contract. Fix: Make sure the target cannot be chosen by a caller, that its storage layout fits this contract, and that only a trusted role can reach the call."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/UpgradeShim.sol",
+                  "index": 4
+                },
+                "region": {
+                  "startLine": 43,
+                  "startColumn": 23
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Unchecked External Calls",
+            "subject": "poke"
+          }
+        },
+        {
+          "ruleId": "call-before-state-write",
+          "ruleIndex": 3,
+          "level": "warning",
+          "message": {
+            "text": "The function withdraw makes a low-level call (.call) and writes state afterwards (to balances, line 23). A callee that calls back sees the state before the write. Fix: Write the state first and make the external call last (checks, effects, interactions), or guard the function with a reentrancy lock."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 21,
+                  "startColumn": 36
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Reentrancy Attacks",
+            "subject": "withdraw"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "The function refund is external, writes entries of a mapping or an array (balances, line 32), and has no access modifier from the list and no comparison of msg.sender. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 30,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "refund"
+          }
+        },
+        {
+          "ruleId": "call-before-state-write",
+          "ruleIndex": 3,
+          "level": "warning",
+          "message": {
+            "text": "The function refund makes a transfer of ether (.send) and writes state afterwards (to balances, line 32). A callee that calls back sees the state before the write. Fix: Write the state first and make the external call last (checks, effects, interactions), or guard the function with a reentrancy lock."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 31,
+                  "startColumn": 12
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "low",
+            "owasp": "Reentrancy Attacks",
+            "subject": "refund"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "The function setFee is external, writes a state variable (fee, line 36), and has no access modifier from the list and no comparison of msg.sender. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 35,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "setFee"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "The function setOwner is public, writes a state variable (owner, line 40), and has no access modifier from the list and no comparison of msg.sender. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 39,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "setOwner"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "The function capture is external, writes a state variable (fee, line 49), and has no access modifier from the list and no comparison of msg.sender. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 47,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "capture"
+          }
+        },
+        {
+          "ruleId": "call-before-state-write",
+          "ruleIndex": 3,
+          "level": "warning",
+          "message": {
+            "text": "The function capture makes a low-level call (.call) and writes state afterwards (to fee, line 49). A callee that calls back sees the state before the write. Fix: Write the state first and make the external call last (checks, effects, interactions), or guard the function with a reentrancy lock."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 48,
+                  "startColumn": 26
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Reentrancy Attacks",
+            "subject": "capture"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "The function join is external, writes a state variable (players, line 10), and has no access modifier from the list and no comparison of msg.sender. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LuckyDraw.sol",
+                  "index": 1
+                },
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "join"
+          }
+        },
+        {
+          "ruleId": "block-randomness",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "The function pick uses block.timestamp, which is hashed and reduced with %. If this is meant to be random, the one who builds the block, or a contract that calls in the same block, can influence it. Fix: Do not draw anything of value from block values: a validator or a caller who can wait for the right block can pick the result. Use a source of randomness built for it."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LuckyDraw.sol",
+                  "index": 1
+                },
+                "region": {
+                  "startLine": 14,
+                  "startColumn": 60
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Insecure Randomness",
+            "subject": "pick"
+          }
+        },
+        {
+          "ruleId": "block-randomness",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "The function coin uses block.number, which is used with %. If this is meant to be random, the one who builds the block, or a contract that calls in the same block, can influence it. Fix: Do not draw anything of value from block values: a validator or a caller who can wait for the right block can pick the result. Use a source of randomness built for it."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LuckyDraw.sol",
+                  "index": 1
+                },
+                "region": {
+                  "startLine": 19,
+                  "startColumn": 16
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "low",
+            "owasp": "Insecure Randomness",
+            "subject": "coin"
+          }
+        },
+        {
+          "ruleId": "block-randomness",
+          "ruleIndex": 7,
+          "level": "warning",
+          "message": {
+            "text": "The function seed uses blockhash, which is hashed. If this is meant to be random, the one who builds the block, or a contract that calls in the same block, can influence it. Fix: Do not draw anything of value from block values: a validator or a caller who can wait for the right block can pick the result. Use a source of randomness built for it."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LuckyDraw.sol",
+                  "index": 1
+                },
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 37
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Insecure Randomness",
+            "subject": "seed"
+          }
+        },
+        {
+          "ruleId": "unbounded-loop",
+          "ruleIndex": 8,
+          "level": "warning",
+          "message": {
+            "text": "The function payAll loops up to the length of the state array players and makes an external call in the loop. If anyone can make the array longer, the loop can cost more gas than a block holds. Fix: Bound the work of one call: process a range, keep a cursor in storage, or let each user pull what is theirs instead of pushing to everyone."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LuckyDraw.sol",
+                  "index": 1
+                },
+                "region": {
+                  "startLine": 27,
+                  "startColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Denial of Service (DoS) Attacks",
+            "subject": "payAll"
+          }
+        },
+        {
+          "ruleId": "unbounded-loop",
+          "ruleIndex": 8,
+          "level": "warning",
+          "message": {
+            "text": "The function count loops up to the length of the state array players. If anyone can make the array longer, the loop can cost more gas than a block holds. Fix: Bound the work of one call: process a range, keep a cursor in storage, or let each user pull what is theirs instead of pushing to everyone."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LuckyDraw.sol",
+                  "index": 1
+                },
+                "region": {
+                  "startLine": 35,
+                  "startColumn": 33
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Denial of Service (DoS) Attacks",
+            "subject": "count"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "The function register is external, writes entries of a mapping or an array (entries, line 10), and has no access modifier from the list and no comparison of msg.sender. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/OldRegistry.sol",
+                  "index": 2
+                },
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "register"
+          }
+        },
+        {
+          "ruleId": "tx-origin-auth",
+          "ruleIndex": 4,
+          "level": "warning",
+          "message": {
+            "text": "The function onlyPeople compares tx.origin with msg.sender. This is often used to keep contracts out, and it is listed because tx.origin is the account that started the transaction, not the caller. Fix: Use msg.sender to know who called. tx.origin is the account that started the transaction, not the contract that called this one, so a contract the owner calls can act as the owner."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/OriginWallet.sol",
+                  "index": 3
+                },
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 17
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "low",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "onlyPeople"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "The function forward is external, uses delegatecall, and has no access modifier from the list and no comparison of msg.sender. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/UpgradeShim.sol",
+                  "index": 4
+                },
+                "region": {
+                  "startLine": 18,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "forward"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "The function run is external, uses delegatecall, and has no access modifier from the list and no comparison of msg.sender. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/UpgradeShim.sol",
+                  "index": 4
+                },
+                "region": {
+                  "startLine": 23,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "run"
+          }
+        },
+        {
+          "ruleId": "delegatecall-use",
+          "ruleIndex": 5,
+          "level": "warning",
+          "message": {
+            "text": "The function run uses delegatecall and has no sign of an access check. The code at the target runs with the storage and the balance of this contract. Fix: Make sure the target cannot be chosen by a caller, that its storage layout fits this contract, and that only a trusted role can reach the call."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/UpgradeShim.sol",
+                  "index": 4
+                },
+                "region": {
+                  "startLine": 24,
+                  "startColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Unchecked External Calls",
+            "subject": "run"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "warning",
+          "message": {
+            "text": "The function close is external, calls selfdestruct, and has no access modifier from the list and no comparison of msg.sender. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/UpgradeShim.sol",
+                  "index": 4
+                },
+                "region": {
+                  "startLine": 33,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "close"
+          }
+        },
+        {
+          "ruleId": "selfdestruct-use",
+          "ruleIndex": 6,
+          "level": "warning",
+          "message": {
+            "text": "The function close calls selfdestruct and has no sign of an access check. The contract can be ended, and its balance sent, by whoever calls it. Fix: Make sure only a trusted role can reach it, and check whether the behaviour you rely on is the same on the chains and compiler versions you target."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/UpgradeShim.sol",
+                  "index": 4
+                },
+                "region": {
+                  "startLine": 34,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "close"
+          }
+        },
+        {
+          "ruleId": "state-change-no-access-check",
+          "ruleIndex": 1,
+          "level": "note",
+          "message": {
+            "text": "The function initialize looks like an initializer and has no initializer modifier, so it may be called by anyone, and more than once. Fix: Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 43,
+                  "startColumn": 14
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "initialize"
+          }
+        },
+        {
+          "ruleId": "unchecked-low-level-call",
+          "ruleIndex": 2,
+          "level": "note",
+          "message": {
+            "text": "The function pushOut calls .transfer(), which passes a fixed gas stipend to the recipient; a recipient that is a contract may need more, and then the call fails. Fix: Use the bool the call returns (require it, or branch on it), or use a library call that reverts for you. Do not rely on transfer or send to be enough gas for a recipient that is a contract."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/LeakyVault.sol",
+                  "index": 0
+                },
+                "region": {
+                  "startLine": 53,
+                  "startColumn": 12
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": "Unchecked External Calls",
+            "subject": "pushOut"
+          }
+        },
+        {
+          "ruleId": "floating-pragma",
+          "ruleIndex": 9,
+          "level": "note",
+          "message": {
+            "text": "The pragma \"solidity ^0.8.0\" allows more than one compiler version. Pin the version you test and deploy with. Fix: Pin the version you test and deploy with, such as pragma solidity 0.8.24, for contracts that are deployed. A library may keep a range on purpose."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/OldRegistry.sol",
+                  "index": 2
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": null,
+            "subject": null
+          }
+        },
+        {
+          "ruleId": "missing-spdx",
+          "ruleIndex": 10,
+          "level": "note",
+          "message": {
+            "text": "The file has no SPDX-License-Identifier comment. Fix: Add a line such as // SPDX-License-Identifier: MIT at the top of the file, with the license you use."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/OldRegistry.sol",
+                  "index": 2
+                },
+                "region": {
+                  "startLine": 1,
+                  "startColumn": 1
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "high",
+            "owasp": null,
+            "subject": null
+          }
+        },
+        {
+          "ruleId": "delegatecall-use",
+          "ruleIndex": 5,
+          "level": "note",
+          "message": {
+            "text": "The function runAsAdmin uses delegatecall and has an access check. The code at the target runs with the storage and the balance of this contract. Fix: Make sure the target cannot be chosen by a caller, that its storage layout fits this contract, and that only a trusted role can reach the call."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/UpgradeShim.sol",
+                  "index": 4
+                },
+                "region": {
+                  "startLine": 29,
+                  "startColumn": 38
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Unchecked External Calls",
+            "subject": "runAsAdmin"
+          }
+        },
+        {
+          "ruleId": "selfdestruct-use",
+          "ruleIndex": 6,
+          "level": "note",
+          "message": {
+            "text": "The function closeAsAdmin calls selfdestruct and has an access check. The contract can be ended, and its balance sent, by whoever passes the check. Fix: Make sure only a trusted role can reach it, and check whether the behaviour you rely on is the same on the chains and compiler versions you target."
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "examples/bad/UpgradeShim.sol",
+                  "index": 4
+                },
+                "region": {
+                  "startLine": 38,
+                  "startColumn": 9
+                }
+              }
+            }
+          ],
+          "properties": {
+            "confidence": "medium",
+            "owasp": "Access Control Vulnerabilities",
+            "subject": "closeAsAdmin"
+          }
+        }
+      ],
+      "properties": {
+        "notice": "This report is a heuristic first pass over the text of the files. It points a reviewer at places to look; it is not an audit, it does not compile or run the code, and a clean report does not mean the code is safe.",
+        "result": "FAIL - 8 findings at or above error (8 error, 20 warning, 6 info)"
+      }
+    }
+  ]
+}

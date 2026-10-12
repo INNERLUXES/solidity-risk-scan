@@ -1,0 +1,253 @@
+{
+  "$schema": "https://json.schemastore.org/sarif-2.1.0.json",
+  "version": "2.1.0",
+  "runs": [
+    {
+      "tool": {
+        "driver": {
+          "name": "solidity-risk-scan",
+          "version": "1.0.0",
+          "informationUri": "https://github.com/INNERLUXES/solidity-risk-scan",
+          "rules": [
+            {
+              "id": "file-unreadable",
+              "name": "file-unreadable",
+              "shortDescription": {
+                "text": "a file the tool could not read or follow (not UTF-8, too large, a comment or string never closed, a character Solidity does not use, brackets that do not match, too many tokens), so nothing in it was checked"
+              },
+              "help": {
+                "text": "Fix the file or leave it out of the scan; a file that is not read is not a file that is fine. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": null
+              }
+            },
+            {
+              "id": "state-change-no-access-check",
+              "name": "state-change-no-access-check",
+              "shortDescription": {
+                "text": "a public or external function that is not view or pure and writes a state variable, or calls selfdestruct or delegatecall, with no access modifier from the list and no comparison of msg.sender in its body"
+              },
+              "help": {
+                "text": "Ask who should be able to call the function. Add an access modifier or a check of msg.sender, or make the function internal; if it is open on purpose, say so in a comment for the reviewer. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Access Control Vulnerabilities"
+              }
+            },
+            {
+              "id": "unchecked-low-level-call",
+              "name": "unchecked-low-level-call",
+              "shortDescription": {
+                "text": "a low-level call, delegatecall, staticcall or send whose bool result is not used; also a note on transfer and send, which pass a fixed gas stipend"
+              },
+              "help": {
+                "text": "Use the bool the call returns (require it, or branch on it), or use a library call that reverts for you. Do not rely on transfer or send to be enough gas for a recipient that is a contract. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": "Unchecked External Calls"
+              }
+            },
+            {
+              "id": "call-before-state-write",
+              "name": "call-before-state-write",
+              "shortDescription": {
+                "text": "in one function, an external call (a low-level call, transfer, send, a call through an address or contract variable, safeTransfer) comes before a write to a state variable, and the function has no nonReentrant modifier"
+              },
+              "help": {
+                "text": "Write the state first and make the external call last (checks, effects, interactions), or guard the function with a reentrancy lock. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Reentrancy Attacks"
+              }
+            },
+            {
+              "id": "tx-origin-auth",
+              "name": "tx-origin-auth",
+              "shortDescription": {
+                "text": "tx.origin used in a comparison, a require, an assert, an if or a while"
+              },
+              "help": {
+                "text": "Use msg.sender to know who called. tx.origin is the account that started the transaction, not the contract that called this one, so a contract the owner calls can act as the owner. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": "Access Control Vulnerabilities"
+              }
+            },
+            {
+              "id": "delegatecall-use",
+              "name": "delegatecall-use",
+              "shortDescription": {
+                "text": "delegatecall, which runs code of another contract with the storage of this one; an error when the target is a parameter of the function, info when the function has an access check"
+              },
+              "help": {
+                "text": "Make sure the target cannot be chosen by a caller, that its storage layout fits this contract, and that only a trusted role can reach the call. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Unchecked External Calls"
+              }
+            },
+            {
+              "id": "selfdestruct-use",
+              "name": "selfdestruct-use",
+              "shortDescription": {
+                "text": "selfdestruct (or suicide), which removes the code of the contract and sends its balance away; info when the function has an access check"
+              },
+              "help": {
+                "text": "Make sure only a trusted role can reach it, and check whether the behaviour you rely on is the same on the chains and compiler versions you target. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Access Control Vulnerabilities"
+              }
+            },
+            {
+              "id": "block-randomness",
+              "name": "block-randomness",
+              "shortDescription": {
+                "text": "block.timestamp, block.number, block.prevrandao, block.difficulty or blockhash used inside keccak256, sha256 or abi.encode, or in a statement with %"
+              },
+              "help": {
+                "text": "Do not draw anything of value from block values: a validator or a caller who can wait for the right block can pick the result. Use a source of randomness built for it. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Insecure Randomness"
+              }
+            },
+            {
+              "id": "unbounded-loop",
+              "name": "unbounded-loop",
+              "shortDescription": {
+                "text": "a for or while loop whose condition compares with the length of a state array"
+              },
+              "help": {
+                "text": "Bound the work of one call: process a range, keep a cursor in storage, or let each user pull what is theirs instead of pushing to everyone. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "warning"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": "Denial of Service (DoS) Attacks"
+              }
+            },
+            {
+              "id": "floating-pragma",
+              "name": "floating-pragma",
+              "shortDescription": {
+                "text": "pragma solidity with ^, >, <, ~ or a range, so the file builds with more than one compiler version"
+              },
+              "help": {
+                "text": "Pin the version you test and deploy with, such as pragma solidity 0.8.24, for contracts that are deployed. A library may keep a range on purpose. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": null
+              }
+            },
+            {
+              "id": "missing-spdx",
+              "name": "missing-spdx",
+              "shortDescription": {
+                "text": "no SPDX-License-Identifier comment in the file"
+              },
+              "help": {
+                "text": "Add a line such as // SPDX-License-Identifier: MIT at the top of the file, with the license you use. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "note"
+              },
+              "properties": {
+                "confidence": "high",
+                "owasp": null
+              }
+            },
+            {
+              "id": "secret-in-source",
+              "name": "secret-in-source",
+              "shortDescription": {
+                "text": "a string or a comment shaped like a mnemonic, an extended private key, a private key in hex or a key in WIF"
+              },
+              "help": {
+                "text": "Remove it from the file and from the history of the repository, and treat the key as exposed. The tool does not show the value. (a heuristic of this tool)"
+              },
+              "defaultConfiguration": {
+                "level": "error"
+              },
+              "properties": {
+                "confidence": "medium",
+                "owasp": null
+              }
+            }
+          ]
+        }
+      },
+      "artifacts": [
+        {
+          "location": {
+            "uri": "examples/good/IVault.sol"
+          }
+        },
+        {
+          "location": {
+            "uri": "examples/good/Ownable.sol"
+          }
+        },
+        {
+          "location": {
+            "uri": "examples/good/Payouts.sol"
+          }
+        },
+        {
+          "location": {
+            "uri": "examples/good/SimpleToken.sol"
+          }
+        },
+        {
+          "location": {
+            "uri": "examples/good/Vault.sol"
+          }
+        }
+      ],
+      "results": [],
+      "properties": {
+        "notice": "This report is a heuristic first pass over the text of the files. It points a reviewer at places to look; it is not an audit, it does not compile or run the code, and a clean report does not mean the code is safe.",
+        "result": "PASS - no finding at or above error"
+      }
+    }
+  ]
+}

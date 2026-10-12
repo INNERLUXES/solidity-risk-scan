@@ -1,0 +1,174 @@
+{
+  "tool": "solidity-risk-scan",
+  "version": "1.0.0",
+  "inputs": [
+    "examples/good"
+  ],
+  "files": [
+    {
+      "file": "examples/good/IVault.sol",
+      "read": true,
+      "bytes": 241,
+      "lines": 10,
+      "contracts": 1,
+      "functions": 3
+    },
+    {
+      "file": "examples/good/Ownable.sol",
+      "read": true,
+      "bytes": 489,
+      "lines": 22,
+      "contracts": 1,
+      "functions": 3
+    },
+    {
+      "file": "examples/good/Payouts.sol",
+      "read": true,
+      "bytes": 1144,
+      "lines": 38,
+      "contracts": 2,
+      "functions": 3
+    },
+    {
+      "file": "examples/good/SimpleToken.sol",
+      "read": true,
+      "bytes": 1639,
+      "lines": 46,
+      "contracts": 1,
+      "functions": 4
+    },
+    {
+      "file": "examples/good/Vault.sol",
+      "read": true,
+      "bytes": 1511,
+      "lines": 49,
+      "contracts": 1,
+      "functions": 5
+    }
+  ],
+  "summary": {
+    "files": 5,
+    "read": 5,
+    "notRead": 0,
+    "contracts": 4,
+    "interfaces": 1,
+    "libraries": 1,
+    "functions": 18,
+    "lines": 165
+  },
+  "totals": {
+    "findings": 0,
+    "byLevel": {
+      "error": 0,
+      "warning": 0,
+      "info": 0
+    },
+    "hidden": 0
+  },
+  "rules": [
+    {
+      "id": "file-unreadable",
+      "level": "error",
+      "confidence": "high",
+      "owasp": null,
+      "findings": 0
+    },
+    {
+      "id": "state-change-no-access-check",
+      "level": "warning",
+      "confidence": "medium",
+      "owasp": "Access Control Vulnerabilities",
+      "findings": 0
+    },
+    {
+      "id": "unchecked-low-level-call",
+      "level": "error",
+      "confidence": "high",
+      "owasp": "Unchecked External Calls",
+      "findings": 0
+    },
+    {
+      "id": "call-before-state-write",
+      "level": "warning",
+      "confidence": "medium",
+      "owasp": "Reentrancy Attacks",
+      "findings": 0
+    },
+    {
+      "id": "tx-origin-auth",
+      "level": "error",
+      "confidence": "high",
+      "owasp": "Access Control Vulnerabilities",
+      "findings": 0
+    },
+    {
+      "id": "delegatecall-use",
+      "level": "warning",
+      "confidence": "medium",
+      "owasp": "Unchecked External Calls",
+      "findings": 0
+    },
+    {
+      "id": "selfdestruct-use",
+      "level": "warning",
+      "confidence": "medium",
+      "owasp": "Access Control Vulnerabilities",
+      "findings": 0
+    },
+    {
+      "id": "block-randomness",
+      "level": "warning",
+      "confidence": "medium",
+      "owasp": "Insecure Randomness",
+      "findings": 0
+    },
+    {
+      "id": "unbounded-loop",
+      "level": "warning",
+      "confidence": "medium",
+      "owasp": "Denial of Service (DoS) Attacks",
+      "findings": 0
+    },
+    {
+      "id": "floating-pragma",
+      "level": "info",
+      "confidence": "high",
+      "owasp": null,
+      "findings": 0
+    },
+    {
+      "id": "missing-spdx",
+      "level": "info",
+      "confidence": "high",
+      "owasp": null,
+      "findings": 0
+    },
+    {
+      "id": "secret-in-source",
+      "level": "error",
+      "confidence": "medium",
+      "owasp": null,
+      "findings": 0
+    }
+  ],
+  "options": {
+    "minSeverity": "info",
+    "failOn": "error",
+    "accessModifiers": [
+      "onlyOwner",
+      "onlyRole",
+      "onlyAdmin",
+      "auth",
+      "requiresAuth"
+    ],
+    "includeTests": false
+  },
+  "findings": [],
+  "notes": [],
+  "notice": "This report is a heuristic first pass over the text of the files. It points a reviewer at places to look; it is not an audit, it does not compile or run the code, and a clean report does not mean the code is safe.",
+  "result": {
+    "pass": true,
+    "failOn": "error",
+    "text": "PASS - no finding at or above error"
+  }
+}
